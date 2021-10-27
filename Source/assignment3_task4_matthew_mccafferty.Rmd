@@ -14,6 +14,15 @@ library(janitor)
 library(DT)
 library(kableExtra)
 ```
+# Read in Urchin Data and Clean Names
+
+```{r}
+urchins <- read_csv(here("data", "urchins.csv"))
+```
+```{r}
+ urchins_clean <- urchins %>% 
+clean_names() 
+```
 
 # Wrangle Naples Reef Purple Urchin Observations 2010
 ```{r}
