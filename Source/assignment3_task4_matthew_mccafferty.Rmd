@@ -14,11 +14,12 @@ library(janitor)
 library(DT)
 library(kableExtra)
 ```
+
 # Wrangle Naples Reef Purple Urchin Observations 2010
 ```{r}
 
 urchins_naples_reef_kelp <- urchins_clean %>% 
-  mutate(date_new= mdy(date)) %>% 
+  mutate(date_new = mdy(date)) %>% 
   mutate(year_new = year(date_new)) %>%
   filter(site == "NAPL",
          year_new == "2010",
@@ -27,6 +28,7 @@ urchins_naples_reef_kelp <- urchins_clean %>%
     group_by(treatment)
 
 ```
+
 # Setup Exploratory Graphs (Histogram & QQ Plot) For Size Distrubution
 ```{r}
 ggplot(data = urchins_naples_reef_kelp, aes(x=size)) +

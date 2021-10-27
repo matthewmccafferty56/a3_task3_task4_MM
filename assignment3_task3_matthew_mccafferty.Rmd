@@ -1,12 +1,12 @@
 ---
-title: "assignment3_task3_matthew_mccafferty"
+title: "Task 3: Santa Barbara Urchins"
 author: "Matthew McCafferty"
 date: "10/23/2021"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning= FALSE)
+knitr::opts_chunk$set(echo = TRUE, message= FALSE, warning= FALSE)
 library(tidyverse)
 library(here)
 library(lubridate)
@@ -19,13 +19,18 @@ library(kableExtra)
 
 ```{r}
 urchins <- read_csv(here("data", "urchins.csv"))
+
 ```
+
+## Clean names
 ```{r}
 urchins_clean <- urchins %>% 
 clean_names() 
 
 ```
 
+
+# Create Faceted Historgram and Descriptive Table of Purple and Red Urchins 
 ```{r}
 ggplot(data = urchins_clean, aes(x= size)) +
   facet_wrap(~ common_name) +
@@ -47,7 +52,9 @@ urchins_sum <- urchins_clean %>%
 urchins_sum %>% 
   kable(digits = 2)
 ```
+The Red Urchin population is closer to a normal distribution than the Purple Urchin population having more right-skewed distribution. With the Red Urchin population, I would predict that the mean and median are the same number, and the right-skewed distribution will have the median to the right of the mean. 
 
+# Purple Urchin Counts by Site and Year
 ```{r}
 purple_urchins <- urchins_clean %>% 
   filter(common_name == "Purple Urchin") 
@@ -63,19 +70,23 @@ purple_urchins <- urchins_clean %>%
 purple_urchins_table <- purple_urchins_date %>% 
   group_by(site_full, year_new) %>% 
   count(year_new)
+
 ```
 
+
+
+## Finalized Graph of Purple Urchin Count by Site
 ```{r}
 ggplot(data = purple_urchins_table, aes(x= year_new, y=n))+
   facet_wrap(~ site_full) +
   geom_col(fill= "purple", color= "black", bins=10) +
   theme_classic() +
-   labs(y= "Number Observed By Year",
-       x= "Number of Urchins Observed (Yearly)",
-       title= "Urchin Observations (Per Year) at Each Site",
+   labs(y= "Number of Purple Urchins Observed (Annually)",
+       x= "Year Purple Urchins Observed",
+       title= "Purple Urchin Observations (Per Year) at Each Site",
        subtitle= "2008-2020",
        caption= "Data Source: Reed, D, R. Miller (2021)")
   
 ```
 
-
+I do not think this graph reflects the changes in purple urchin populations because I don't have the information or data on the historical Purple Urchin population to compare it. There could be several factors that the sampling doesn't consider because the sample was focused on a specific comparison (Control vs. Annual). This graph also doesn't tell me anything about the statistical uncertainty of the population. For example, 2009 had the most observed Purple Urchins 4/5 of the sites, but the graph doesn't tell us why. There could have been several factors why the Purple Urchin population spiked that year, Marine heatwave, lack of predators because of overhunting etc.. 
