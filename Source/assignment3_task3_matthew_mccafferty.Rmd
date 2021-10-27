@@ -1,0 +1,81 @@
+---
+title: "assignment3_task3_matthew_mccafferty"
+author: "Matthew McCafferty"
+date: "10/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning= FALSE)
+library(tidyverse)
+library(here)
+library(lubridate)
+library(janitor)
+library(DT)
+library(kableExtra)
+```
+
+# Read in Data
+
+```{r}
+urchins <- read_csv(here("data", "urchins.csv"))
+```
+```{r}
+urchins_clean <- urchins %>% 
+clean_names() 
+
+```
+
+```{r}
+ggplot(data = urchins_clean, aes(x= size)) +
+  facet_wrap(~ common_name) +
+  geom_histogram(fill= "blue", color= "black", bins = 10) +
+  theme_classic() +
+  labs(y= "Urchins",
+       x= "Urchin diameter (cm)",
+       title= "Urchin Size Distrubution by Species",
+       subtitle= "2008-2020",
+       caption= "Data Source: Reed, D, R. Miller (2021)") 
+
+urchins_sum <- urchins_clean %>% 
+  group_by(common_name) %>% 
+  summarize(mean_diameter_cm= mean(size, na.rm= TRUE),
+            median_diameter_cm= median(size, na.rm= TRUE),
+            sd_diameter_cm= sd(size, na.rm= TRUE),
+            sample_size= n())
+  
+urchins_sum %>% 
+  kable(digits = 2)
+```
+
+```{r}
+purple_urchins <- urchins_clean %>% 
+  filter(common_name == "Purple Urchin") 
+  purple_urchins_date <- purple_urchins %>% 
+  mutate(date_new= mdy(date)) %>% 
+  mutate(year_new = year(date_new)) %>% 
+  mutate(site_full = case_when(site == "NAPL" ~ "Naples Reef",
+                               site == "AQUE" ~ "Arroyo Quemado Reef",
+                               site == "CARP"~ "Carpinteria Reef", 
+                               site == "MOHK" ~ "Mohawk Reef", 
+                               site == "IVEE" ~ "Isla Vista Reef")) 
+
+purple_urchins_table <- purple_urchins_date %>% 
+  group_by(site_full, year_new) %>% 
+  count(year_new)
+```
+
+```{r}
+ggplot(data = purple_urchins_table, aes(x= year_new, y=n))+
+  facet_wrap(~ site_full) +
+  geom_col(fill= "red", color= "black") +
+  theme_bw() +
+   labs(y= "Number Observed By Year",
+       x= "Number of Urchins Observed (Yearly)",
+       title= "Urchin Observations (Per Year) at Each Site",
+       subtitle= "2008-2020",
+       caption= "Data Source: Reed, D, R. Miller (2021)")
+  
+```
+
+

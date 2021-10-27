@@ -1,0 +1,55 @@
+---
+title: "Task 4: Purple Urchins, Naples Reef Jan 2010 Size Comparison"
+author: "Matthew McCafferty"
+date: "10/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning= FALSE)
+library(tidyverse)
+library(here)
+library(lubridate)
+library(janitor)
+library(DT)
+library(kableExtra)
+```
+# Wrangle Naples Reef Purple Urchin Observations 2010
+```{r}
+
+urchins_naples_reef_kelp <- urchins_clean %>% 
+  mutate(date_new= mdy(date)) %>% 
+  mutate(year_new = year(date_new)) %>%
+  filter(site == "NAPL",
+         year_new == "2010",
+         common_name == "Purple Urchin",
+         treatment == "CONTROL"| treatment== "ANNUAL") %>% 
+    group_by(treatment)
+
+```
+# Setup Exploratory Graphs (Histogram & QQ Plot) For Size Distrubution
+```{r}
+ggplot(data = urchins_naples_reef_kelp, aes(x=size)) +
+  facet_wrap(~treatment) +
+  geom_histogram(fill= "purple", color="black", bins = 10) 
+
+ggplot(data = urchins_naples_reef_kelp, aes(sample=size)) +
+  geom_qq()+
+  facet_wrap(~treatment)
+```
+The main takeaway from this data is that the average size for the Purple urchin area with no giant kelp removal (Control) is slightly larger than the Annual Kelp Removal (Treatment) area. Also, the treatment sample size has a right-skewed (positive) distribution where it looks like the control sample looks closer to a normal distribution. 
+
+# Create Basic Summary Table  with Descriptive Statistics
+
+```{r}
+urchins_naples_reef_sum <- urchins_naples_reef_kelp %>% 
+  group_by(treatment) %>% 
+  summarize(mean_diameter_cm= mean(size, na.rm= TRUE),
+            median_diameter_cm= median(size, na.rm= TRUE),
+            sd_diameter_cm= sd(size, na.rm= TRUE),
+            sample_size= n())
+
+urchins_naples_reef_sum %>% 
+  kable(digits = 2)
+```
+
